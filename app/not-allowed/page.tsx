@@ -6,7 +6,8 @@ export default async function NotAllowed() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: isAdmin } = await supabase.rpc("is_superadmin");
+  const { data: profile } = await supabase.from("profiles").select("is_superadmin").eq("id", user.id).maybeSingle();
+  const isAdmin = profile?.is_superadmin;
   if (isAdmin) redirect("/");
 
   return (

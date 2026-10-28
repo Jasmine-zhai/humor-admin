@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="panel border-y-0 border-l-0 md:sticky md:top-0 md:flex md:h-dvh md:w-60 md:shrink-0 md:flex-col">
+      <aside className="panel border-y-0 border-l-0 md:sticky md:top-0 md:flex md:h-dvh md:w-64 md:shrink-0 md:flex-col">
         <div className="flex items-center gap-2 px-4 py-4">
           <span className="flex h-8 w-8 items-center justify-center rounded-md btn-neon text-sm font-black">M</span>
           <span className="leading-tight">

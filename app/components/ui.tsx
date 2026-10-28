@@ -36,7 +36,7 @@ export function Bars({ rows, unit = "" }: { rows: { label: string; value: number
   return (
     <ul className="space-y-2">
       {rows.map((r) => (
-        <li key={r.label} className="group grid grid-cols-[7.5rem_1fr_3rem] items-center gap-3 text-sm" title={`${r.label}: ${r.value}${unit}`}>
+        <li key={r.label} className="group grid grid-cols-[10rem_1fr_3.5rem] items-center gap-3 text-sm" title={`${r.label}: ${r.value}${unit}`}>
           <span className="truncate text-slate-300">{r.label}</span>
           <span className="h-3 rounded-r bg-white/5">
             <span
