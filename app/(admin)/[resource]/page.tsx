@@ -23,11 +23,11 @@ export default async function ResourcePage({
   const page = Math.max(1, Number(pageParam) || 1);
   const from = (page - 1) * PAGE_SIZE;
 
-  let query = supabase.from(r.table).select(r.select, { count: "estimated" });
+  let query = supabase.from(r.table).select(r.select, { count: "exact" });
   if (q.trim() && r.searchKey) query = query.ilike(r.searchKey, `%${q.trim()}%`);
   query = r.orderBy
     ? query.order(r.orderBy, { ascending: true }).order("id", { ascending: true })
-    : query.order("created_datetime_utc", { ascending: false });
+    : query.order("created_at", { ascending: false });
   const { data, count, error } = await query.range(from, from + PAGE_SIZE - 1);
 
   const total = count ?? 0;
@@ -65,7 +65,6 @@ export default async function ResourcePage({
           canUpdate={!!r.canUpdate}
           canDelete={!!r.canDelete}
           upload={!!r.upload}
-          idKey={r.idKey ?? "id"}
         />
       )}
 

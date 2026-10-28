@@ -21,7 +21,7 @@ export default function LoginPage() {
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl btn-neon text-2xl font-black">M</div>
         <p className="mt-4 font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan-300/70">Admins only</p>
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-neon">Control Room</h1>
-        <p className="mt-2 text-slate-400">Admin area for the Humor Project database. If you&apos;re not an admin, nothing to see here.</p>
+        <p className="mt-2 text-slate-400">Behind the scenes of Memeside Heights. If you&apos;re not an admin, nothing to see here.</p>
         <button
           onClick={signIn}
           disabled={loading}

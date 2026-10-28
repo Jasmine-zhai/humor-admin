@@ -17,10 +17,10 @@ type Props = {
   canUpdate: boolean;
   canDelete: boolean;
   upload: boolean;
-  idKey: string;
 };
 
-export default function ResourceTable({ slug, fields, rows, canCreate, canUpdate, canDelete, upload, idKey }: Props) {
+export default function ResourceTable({ slug, fields, rows, canCreate, canUpdate, canDelete, upload }: Props) {
+  const idKey = "id";
   const [editing, setEditing] = useState<Row | "new" | null>(null);
   const [viewing, setViewing] = useState<Row | null>(null);
   const [confirmId, setConfirmId] = useState<unknown>(null);
@@ -112,7 +112,6 @@ export default function ResourceTable({ slug, fields, rows, canCreate, canUpdate
           slug={slug}
           fields={fields.filter((f) => f.editable)}
           row={editing === "new" ? null : editing}
-          idKey={idKey}
           upload={upload}
           onClose={() => setEditing(null)}
         />
@@ -130,8 +129,6 @@ function Cell({ field, value, full }: { field: Field; value: unknown; full?: boo
       return <span title={new Date(String(value)).toLocaleString()}>{timeAgo(String(value))}</span>;
     case "image":
       return <img src={String(value)} alt="" className={full ? "max-h-64 rounded-md" : "h-12 w-12 rounded-md object-cover"} />;
-    case "json":
-      return <code className="text-xs">{JSON.stringify(value)}</code>;
     case "longtext": {
       const text = String(value);
       return full ? <>{text}</> : <span title={text}>{text.length > 140 ? text.slice(0, 140) + "…" : text}</span>;
@@ -141,7 +138,8 @@ function Cell({ field, value, full }: { field: Field; value: unknown; full?: boo
   }
 }
 
-function EditForm({ slug, fields, row, idKey, upload, onClose }: { slug: string; fields: Field[]; row: Row | null; idKey: string; upload: boolean; onClose: () => void }) {
+function EditForm({ slug, fields, row, upload, onClose }: { slug: string; fields: Field[]; row: Row | null; upload: boolean; onClose: () => void }) {
+  const idKey = "id";
   const [values, setValues] = useState<Record<string, unknown>>(() =>
     Object.fromEntries(fields.map((f) => [f.key, row ? row[f.key] ?? (f.type === "boolean" ? false : "") : f.type === "boolean" ? false : ""]))
   );
@@ -154,14 +152,16 @@ function EditForm({ slug, fields, row, idKey, upload, onClose }: { slug: string;
     setUploading(true);
     setError("");
     const supabase = createClient();
-    const path = `admin/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    // uploads go in the admin's own folder, like everyone else's (posts/{user id}/...)
+    const path = uploadPath(user?.id ?? "admin", file.name);
     const { error } = await supabase.storage.from(IMAGE_BUCKET).upload(path, file);
     setUploading(false);
     if (error) {
       setError("Upload failed: " + error.message);
       return;
     }
-    set("url", supabase.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl);
+    set(imageKey, supabase.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl);
   }
 
   function save() {
@@ -173,6 +173,7 @@ function EditForm({ slug, fields, row, idKey, upload, onClose }: { slug: string;
     });
   }
 
+  const imageKey = fields.find((f) => f.type === "image")?.key ?? "url";
   const input = "w-full rounded-md bg-black/40 px-3 py-2 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:ring-2 focus:ring-cyan-400/60";
 
   return (
@@ -232,4 +233,8 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
       </div>
     </div>
   );
+}
+
+function uploadPath(userId: string, fileName: string) {
+  return `${userId}/admin-${Date.now()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 }

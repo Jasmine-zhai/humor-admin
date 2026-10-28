@@ -15,6 +15,7 @@ function cleanValues(fields: Field[], values: Record<string, unknown>) {
     if (f.type === "boolean") v = Boolean(v);
     else if (f.type === "number") v = v === "" || v === null || v === undefined ? null : Number(v);
     else if (typeof v === "string") v = v.trim() === "" ? null : v.trim();
+    if (typeof v === "string" && (f.key === "apex_domain" || f.key === "email")) v = v.toLowerCase();
     if (f.required && (v === null || v === undefined)) throw new Error(`${f.label} is required.`);
     if (f.type === "number" && v !== null && Number.isNaN(v)) throw new Error(`${f.label} must be a number.`);
     out[f.key] = v;
@@ -25,9 +26,11 @@ function cleanValues(fields: Field[], values: Record<string, unknown>) {
 export async function createRow(slug: string, values: Record<string, unknown>): Promise<Result> {
   const r = getResource(slug);
   if (!r?.canCreate) return { error: "Not allowed." };
-  const { supabase } = await requireAdmin();
+  const { supabase, user } = await requireAdmin();
   try {
-    const { error } = await supabase.from(r.table).insert(cleanValues(r.fields, values));
+    const row = cleanValues(r.fields, values);
+    if (r.ownerColumn) row[r.ownerColumn] = user.id;
+    const { error } = await supabase.from(r.table).insert(row);
     if (error) return { error: error.message };
   } catch (e) {
     return { error: (e as Error).message };
@@ -41,7 +44,7 @@ export async function updateRow(slug: string, id: string | number, values: Recor
   if (!r?.canUpdate) return { error: "Not allowed." };
   const { supabase } = await requireAdmin();
   try {
-    const { data, error } = await supabase.from(r.table).update(cleanValues(r.fields, values)).eq(r.idKey ?? "id", id).select("id");
+    const { data, error } = await supabase.from(r.table).update(cleanValues(r.fields, values)).eq("id", id).select("id");
     if (error) return { error: error.message };
     if (!data?.length) return { error: "Nothing was updated. You may not have permission to change this row." };
   } catch (e) {
@@ -55,7 +58,7 @@ export async function deleteRow(slug: string, id: string | number): Promise<Resu
   const r = getResource(slug);
   if (!r?.canDelete) return { error: "Not allowed." };
   const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from(r.table).delete().eq(r.idKey ?? "id", id).select("id");
+  const { data, error } = await supabase.from(r.table).delete().eq("id", id).select("id");
   if (error) return { error: error.message.includes("foreign key") ? "Other records still use this one, so it can't be deleted." : error.message };
   if (!data?.length) return { error: "Nothing was deleted. You may not have permission to delete this row." };
   revalidatePath(`/${slug}`);

@@ -27,6 +27,12 @@ export default function Nav() {
   return (
     <nav className="flex gap-1 overflow-x-auto px-2 pb-3 md:block md:flex-1 md:overflow-y-auto">
       {item("/", "📊 Overview")}
+      <div className="flex gap-1 md:mt-4 md:block">
+        <p className="hidden px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300/60 md:block">Memeside Heights</p>
+        {item("/users", "Users")}
+        {item("/media", "AI captions")}
+        {item("/votes", "Likes & votes")}
+      </div>
       {groups.map((g) => (
         <div key={g} className="flex gap-1 md:mt-4 md:block">
           <p className="hidden px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300/60 md:block">{g}</p>
