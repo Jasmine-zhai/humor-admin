@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="flex h-8 w-8 items-center justify-center rounded-md btn-neon text-sm font-black">M</span>
           <span className="leading-tight">
             <span className="block text-[15px] font-extrabold tracking-tight text-neon">Control Room</span>
-            <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">Memeside Heights</span>
+            <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">Humor Project</span>
           </span>
         </div>
         <Nav />

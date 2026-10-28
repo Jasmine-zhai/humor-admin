@@ -1,4 +1,4 @@
-# Memeside Heights · Control Room
+# Humor Project · Control Room
 
 Admin area for the shared Humor Project database (the course's teaching copy, restored into the
 `humor-semester-project` Supabase project).

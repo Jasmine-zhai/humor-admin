@@ -6,8 +6,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Control Room · Memeside Heights",
-  description: "Admin area for Memeside Heights.",
+  title: "Control Room · Humor Project",
+  description: "Admin area for the Humor Project database.",
   robots: { index: false, follow: false },
 };
 
