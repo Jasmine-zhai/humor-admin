@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
 import { buildPrompt } from "@/lib/prompt";
+import { SUPABASE_URL } from "@/lib/config";
 
 type Result = { error?: string };
 
@@ -39,8 +40,8 @@ const MODELS = [process.env.GEMINI_MODEL, "gemini-flash-lite-latest", "gemini-fl
 export async function generateCaptions(postId: number, imageUrl: string, topic: string): Promise<Result> {
   const { supabase } = await requireAdmin();
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return { error: "GEMINI_API_KEY is missing on the server." };
-  if (!imageUrl.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/`)) return { error: "Invalid image." };
+  if (!apiKey) return { error: "AI generation isn't set up yet (GEMINI_API_KEY is missing in Vercel). You can still write captions by hand." };
+  if (!imageUrl.startsWith(`${SUPABASE_URL}/storage/v1/object/public/`)) return { error: "Invalid image." };
 
   const imageRes = await fetch(imageUrl);
   if (!imageRes.ok) return { error: "Couldn't read the image." };
